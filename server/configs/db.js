@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 async function connectDb(params) {
+
     try {
         mongoose.connection.on('connected', ()=> console.log('connected'))
         await mongoose.connect(`${process.env.MONGODB_URI}/my-react-app`);
