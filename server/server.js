@@ -21,7 +21,7 @@ app.use(cors())
 
 app.listen(port, () =>{ console.log(`the server is live on http://localhost:${port}`)})
 
-app.use("api/inngest", serve({ client: inngest, functions }));
+app.use("/api/inngest", serve({ client: inngest, functions }));
 
 app.get('/' , (req,res)=> res.send("SERVER IS LIVE"))
 
