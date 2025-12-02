@@ -18,11 +18,10 @@ app.use(express.json())
 app.use(cors())
 
 // api routes
-app.get('/', (req,res)=> res.send("HELLO FROM NEW CODE"))
 
 app.listen(port, () =>{ console.log(`the server is live on http://localhost:${port}`)})
 
-app.use("/inngest", serve({ client: inngest, functions }));
+app.use("api/inngest", serve({ client: inngest, functions }));
 
 app.get('/' , (req,res)=> res.send("SERVER IS LIVE"))
 
