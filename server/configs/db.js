@@ -11,4 +11,4 @@ async function connectDb(params) {
                     ${err.message}`)
     }
 }
-export default connectDb
+export default connectDb 
