@@ -5,8 +5,8 @@ import { protectAdmin } from "../middleware/auth.js";
 const showRouter = express.Router();
 
 showRouter.get('/now-playing', protectAdmin,getNowPlayingMovies)
-showRouter.post('/add', addShows)
+showRouter.post('/add',protectAdmin, addShows)
 showRouter.get('/all',getShows)
 showRouter.get(':movieId',getShow)
-
+x
 export default showRouter

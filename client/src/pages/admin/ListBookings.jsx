@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Listbookings = () => {
+const ListBookings = () => {
   return (
-    <div>Listbookings</div>
+    <div>ListBookings</div>
   )
 }
 
-export default Listbookings
+export default ListBookings

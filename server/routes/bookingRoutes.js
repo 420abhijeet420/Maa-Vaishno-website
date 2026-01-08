@@ -1,7 +1,11 @@
 import { Router } from "express";
-import { createBooking, getOccupiedSeates } from "../controllers/bookingController";
+import { createBooking, getOccupiedSeates } from "../controllers/bookingController.js";
 
-const bookingRouter = express.Router();
+
+
+
+
+const bookingRouter = Router();
 
 bookingRouter.post('/create', createBooking);
 bookingRouter.get('/seates/:showId', getOccupiedSeates);

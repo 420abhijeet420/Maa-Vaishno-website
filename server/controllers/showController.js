@@ -22,6 +22,9 @@ export const getNowPlayingMovies = async (req, res) => {
 
 
 
+
+
+
 // api to add new shows to db
 export const addShows = async (req, res) => {
     try {
@@ -86,6 +89,9 @@ export const addShows = async (req, res) => {
         res.json({success: false , message: error.message});
     }
 };
+
+
+
 
 
 // API to get all shows from the database

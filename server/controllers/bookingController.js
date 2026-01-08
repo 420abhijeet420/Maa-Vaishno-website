@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Show from "../models/Shows";
 import { err } from "inngest/types";
 import Show from "../models/Shows.js";
 

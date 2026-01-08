@@ -13,7 +13,7 @@ import Layout from "./pages/admin/Layout";
 import Dashboard from "./pages/admin/Dashboard";
 import AddShows from "./pages/admin/AddShows";
 import ListShows from "./pages/admin/ListShows";
-import Listbookings from "./pages/admin/Listbookings";
+import ListBookings from "./pages/admin/ListBookings";
 
 
 const App = () => {
@@ -35,7 +35,7 @@ const App = () => {
           <Route index element={<Dashboard/>}/>
           <Route path="add-shows" element={<AddShows/>}/>
           <Route path="list-shows" element={<ListShows/>}/>
-          <Route path="list-bookings" element={<Listbookings/>}/>
+          <Route path="list-bookings" element={<ListBookings/>}/>
         </Route>
       </Routes>
     {!isAdminRoute && <Footer/>}
