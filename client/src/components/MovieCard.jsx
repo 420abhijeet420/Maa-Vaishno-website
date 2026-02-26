@@ -2,6 +2,7 @@ import { StarIcon } from 'lucide-react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import TimeFormat from '../lib/TimeFormat';
+import { tmdbImg } from '../lib/api';
 
 const MovieCard = ({ movie }) => {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ const MovieCard = ({ movie }) => {
             <div>
                 <img
                     onClick={() => { navigate(`/movies/${movie._id}`); scrollTo(0, 0); }}
-                    src={movie.backdrop_path}
+                    src={tmdbImg(movie.backdrop_path)}
                     alt=""
                     className='rounded-lg h-52 w-full object-cover object-right-bottom cursor-pointer'/>
 

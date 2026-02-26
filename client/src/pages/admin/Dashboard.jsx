@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import { dummyDashboardData } from '../../assets/assets';
+import React, { useContext, useEffect, useState } from 'react'
 import Loading from '../../components/Loading';
-import { BadgeIndianRupeeIcon, ChartLineIcon, CircleDollarSignIcon, IndianRupee, IndianRupeeIcon, LucideIndianRupee, PlayCircleIcon, StarIcon, UsersIcon } from 'lucide-react';
+import { ChartLineIcon, LucideIndianRupee, PlayCircleIcon, StarIcon, UsersIcon } from 'lucide-react';
 import Title from '../../components/admin/Title';
 import BlurCircle from '../../components/BlurCircle';
 import { dateFormat } from '../../lib/dateFormat';
+import api, { tmdbImg } from '../../lib/api';
+import { AppContext } from '../../context/AppContext';
 
 const Dashboard = () => {
 
-  const currency = import.meta.env.VITE_CURRENCY
+  const { currency } = useContext(AppContext)
 
   const [dashboardData, setDashboardData] = useState({
     totalBookings: 0,
@@ -27,8 +28,16 @@ const Dashboard = () => {
   ]
 
   const fetchDashboardData = async () => {
-    setDashboardData(dummyDashboardData)
-    setLoading(false)
+    try {
+      const { data } = await api.get('/api/admin/dashboard')
+      if (data.success) {
+        setDashboardData(data.dashboardData)
+      }
+    } catch (error) {
+      console.error(error.message)
+    } finally {
+      setLoading(false)
+    }
   };
   
   useEffect(() => {
@@ -62,7 +71,7 @@ const Dashboard = () => {
   <BlurCircle top="100px" left="-10%" />
   {dashboardData.activeShows.map((show) => (
     <div key={show._id} className="w-55 rounded-lg overflow-hidden h-full pb-3 bg-primary/10 border border-primary/20 hover:-translate-y-1 transition duration-300">
-      <img src={show.movie.poster_path} alt='' className="h-60 w-full object-cover" />
+      <img src={tmdbImg(show.movie.poster_path)} alt='' className="h-60 w-full object-cover" />
       <p className="font-medium p-2 truncate">{show.movie.title}</p>
       <div className="flex items-center justify-between px-2">
         <p className="text-lg font-medium">{currency}{show.showPrice}</p>

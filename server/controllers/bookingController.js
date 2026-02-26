@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { err } from "inngest/types";
 import Show from "../models/Shows.js";
+import Booking from "../models/Booking.js";
 
 const checkSeatAvailability = async (showId, selectedSeats) =>{
     try {
@@ -8,7 +8,7 @@ const checkSeatAvailability = async (showId, selectedSeats) =>{
         if(!showData) return false;
     
         const occupiedSeats = showData.occupiedSeats;
-        const isAnySeatTaken = selectedSeats.some(seats => occupiedSeats[seats])
+        const isAnySeatTaken = selectedSeats.some(seat => occupiedSeats[seat])
     
         return !isAnySeatTaken;
     } catch (error) {
@@ -25,7 +25,7 @@ export const createBooking = async (req, res) => {
         const { origin } = req.headers;
 
         // Check if the seat is available for the selected show
-        const isAvailable = await checkSeatsAvailability(showId, selectedSeats);
+        const isAvailable = await checkSeatAvailability(showId, selectedSeats);
 
         if (!isAvailable) {
             return res.json({
@@ -45,7 +45,7 @@ export const createBooking = async (req, res) => {
             bookedSeats: selectedSeats
         });
 
-        selectedSeats.map((seat) => {
+        selectedSeats.map((seat) => { 
             showData.occupiedSeats[seat] = userId;
         });
 
@@ -66,6 +66,7 @@ export const getOccupiedSeates = async (req,res) => {
         const {showId} = req.params
         const showData = await Show.findById(showId)
         const occupiedSeats = Object.keys(showData.occupiedSeats)
+        res.json({success: true, occupiedSeats})
     } catch (error) {
         console.error(error.message)
         res.json({success: false, message: error.message})

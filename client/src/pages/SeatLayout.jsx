@@ -1,28 +1,34 @@
 import React, { useEffect, useState } from 'react'
-import { assets, dummyDateTimeData, dummyShowsData } from '../assets/assets'
+import { assets } from '../assets/assets'
 import { useNavigate, useParams } from 'react-router-dom'
 import Loading from '../components/Loading'
 import { ArrowRightIcon, ClockIcon } from 'lucide-react'
 import isoTimeFormat from '../lib/isoTimeFormat'
 import BlurCircle from '../components/BlurCircle'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
+import api from '../lib/api'
+import { useUser } from '@clerk/clerk-react'
 
 const SeatLayout = () => {
   const { id, date } = useParams()
   const navigate = useNavigate()
+  const { user } = useUser()
   
   const groupRows = [["A","B"], ["C", "D"], ["E" ,"F"], ["G", "H"], ["I", "J"]]
   const [selectedSeats, setSelectedSeats] = useState([])
   const [selectedTime, setSelectedTime] = useState()
   const [show, setShow] = useState(null)
+  const [occupiedSeats, setOccupiedSeats] = useState([])
+  const [booking, setBooking] = useState(false)
 
   const renderSeats = (row, count = 6) => (
   <div key={row} className="flex gap-2 mt-2">
     <div className="flex flex-wrap items-center justify-center gap-2">
       {Array.from({ length: count }, (_, i) => {
         const seatId = `${row}${i + 1}`;
+        const isOccupied = occupiedSeats.includes(seatId);
         return (
-          <button key={seatId} onClick={() => handleSeatClick(seatId)} className={`h-8 w-8 rounded border border-primary/60 cursor-pointer ${selectedSeats.includes(seatId) && "bg-primary text-white"}`}>
+          <button key={seatId} disabled={isOccupied} onClick={() => handleSeatClick(seatId)} className={`h-8 w-8 rounded border border-primary/60 cursor-pointer ${selectedSeats.includes(seatId) ? "bg-primary text-white" : ""} ${isOccupied ? "bg-gray-600 text-gray-400 cursor-not-allowed opacity-50" : ""}`}>
             {seatId}
           </button>
         );
@@ -42,14 +48,58 @@ const SeatLayout = () => {
 } 
 
   const getShow = async () => {
-    const show = dummyShowsData.find(show => show._id === id)
-    if(show) {
-      setShow({
-        movie: show,
-        dateTime: dummyDateTimeData
-      })
+    try {
+      const { data } = await api.get(`/api/show/${id}`)
+      if (data.success) {
+        setShow(data)
+      }
+    } catch (error) {
+      console.error(error.message)
     }
   }
+
+  // Fetch occupied seats when a showtime is selected
+  const fetchOccupiedSeats = async (showId) => {
+    try {
+      const { data } = await api.get(`/api/booking/seates/${showId}`)
+      if (data.success) {
+        setOccupiedSeats(data.occupiedSeats)
+      }
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
+
+  const handleTimeSelect = (item) => {
+    setSelectedTime(item)
+    setSelectedSeats([])
+    fetchOccupiedSeats(item.showId)
+  }
+
+  const handleBooking = async () => {
+    if (!user) return toast('Please login first')
+    if (!selectedTime) return toast('Please select a time')
+    if (selectedSeats.length === 0) return toast('Please select at least one seat')
+
+    try {
+      setBooking(true)
+      const { data } = await api.post('/api/booking/create', {
+        showId: selectedTime.showId,
+        selectedSeats,
+      })
+      if (data.success) {
+        toast.success(data.message)
+        navigate('/my-bookings')
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    } finally {
+      setBooking(false)
+    }
+  }
+
   useEffect(()=>{
     getShow()
   },[])
@@ -65,8 +115,8 @@ const SeatLayout = () => {
             <p className='text-lg font-semibold px-6'>Available Timings</p>
             <div className='mt-5 space-y-1'>
                 {
-                show.dateTime[date].map((item)=>(
-                    <div key={item.time} onClick={()=> setSelectedTime(item)} className={`flex items-center gap-2 px-6 py-2 w-max rounded-r-md  cursor-pointer transition 
+                show.dateTime[date]?.map((item)=>(
+                    <div key={item.time} onClick={()=> handleTimeSelect(item)} className={`flex items-center gap-2 px-6 py-2 w-max rounded-r-md  cursor-pointer transition 
                     ${selectedTime?.time === item.time ? "bg-primary text-white" : "hover:bg-primary/20"}`}>
                         <ClockIcon className="w-4 h-4"/>
                         <p className='text-sm'>{isoTimeFormat(item.time)}</p>
@@ -87,14 +137,14 @@ const SeatLayout = () => {
                 </div>
             <div className='grid grid-cols-2 gap-11'>
                 {groupRows.slice(1).map((group, idx)=>(
-                    <div>
+                    <div key={idx}>
                         {group.map(row => renderSeats(row))}
                     </div>
                 ))}
                 </div>
             </div>
-        <button onClick={() => navigate('/my-bookings')} className='flex items-center gap-1 mt-20 px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer active:scale-95'>
-          Proceed to Checkout
+        <button disabled={booking} onClick={handleBooking} className='flex items-center gap-1 mt-20 px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer active:scale-95 disabled:opacity-50'>
+          {booking ? 'Booking...' : 'Proceed to Checkout'}
           <ArrowRightIcon strokeWidth={3} className="w-4 h-4" />
         </button>            
         </div>

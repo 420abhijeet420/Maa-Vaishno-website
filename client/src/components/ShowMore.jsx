@@ -1,15 +1,16 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { dummyShowsData } from '../assets/assets';
+import { AppContext } from '../context/AppContext';
 import MovieCard from './MovieCard';
 
 const ShowMore = () => {
     const navigate = useNavigate()
+    const { shows } = useContext(AppContext)
   return (
     <div>
         <p className='text-lg font-medium mt-20 mb-8'>You May Also Like</p>
         <div className='flex flex-wrap max-sm:justify-center gap-8'>
-            {dummyShowsData.slice(0,4).map((movie, index)=>(
+            {shows.slice(0,4).map((movie, index)=>(
             <MovieCard key={index} movie={movie}/>
             ))}
         </div>

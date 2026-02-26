@@ -1,10 +1,6 @@
 import { Router } from "express";
 import { createBooking, getOccupiedSeates } from "../controllers/bookingController.js";
 
-
-
-
-
 const bookingRouter = Router();
 
 bookingRouter.post('/create', createBooking);
