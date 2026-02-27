@@ -99,9 +99,8 @@ admin/      → Admin dashboar
 
 ---
 
-##  Live Demo
-https://maa-vaishno-website-f9u6.vercel.app
-
+##  Live Demo 
+https://maa-vaishno-website-fspz.vercel.app
 ---
 
 ##  What This Project Demonstrates
